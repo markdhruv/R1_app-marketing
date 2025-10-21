@@ -1,21 +1,47 @@
 // This is a serverless function that acts as a secure proxy.
-// In a production environment (like Vercel or Netlify), this file 
-// should be placed in the `api/` directory of your project.
+// This is the corrected, self-contained version that should resolve the server error.
 
 import { GoogleGenAI, Type } from "@google/genai";
-// Fix: Import `audienceOptions` and `toneOptions` as values, not just types, to allow runtime access.
-import { audienceOptions, toneOptions } from '../types';
+// We only import TYPE definitions now, not values.
 import type { 
     CampaignAnalysisResult, 
     CTA, 
     MarketingObjective, 
     CampaignGoalDetails,
+    PresetAudience,
+    PresetBrandTone
 } from '../types';
+
+// --- FIX STARTS HERE ---
+// By defining these constants directly in the file, we remove the broken
+// dependency that was causing the server to crash.
+
+const audienceOptions = [
+    { value: 'general', label: 'General Consumers (B2C)' },
+    { value: 'genz', label: 'Gen Z / Young Adults' },
+    { value: 'millennials', label: 'Millennials' },
+    { value: 'parents', label: 'Parents / Families' },
+    { value: 'b2b', label: 'B2B Professionals / Decision Makers' },
+    { value: 'smb', label: 'Small Business Owners' },
+    { value: 'custom', label: 'Custom...' },
+] as const;
+
+const toneOptions = [
+    { value: 'professional', label: 'Professional / Authoritative' },
+    { value: 'friendly', label: 'Friendly / Conversational' },
+    { value: 'humorous', label: 'Humorous / Witty' },
+    { value: 'empathetic', label: 'Empathetic / Caring' },
+    { value: 'inspirational', label: 'Inspirational / Aspirational' },
+    { value: 'urgent', label: 'Direct / Urgent' },
+    { value: 'custom', label: 'Custom...' },
+] as const;
+
+// --- FIX ENDS HERE ---
+
 
 const API_KEY = process.env.API_KEY;
 
-// The handler function signature might vary slightly based on the hosting provider.
-// This signature is compatible with Vercel.
+// The handler function for Vercel.
 export default async function handler(req: any, res: any) {
     if (req.method !== 'POST') {
         res.setHeader('Allow', ['POST']);
